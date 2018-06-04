@@ -25,6 +25,7 @@ $source = file_get_contents("source.txt");
 $sourceLength = strlen($source);
 $expectedFillers = 0;
 // loop on the characters
+$startTime = microtime(true);
 for ($i = 0; $i < $sourceLength; $i++) {
     $ordCurrentChar = ord($source[$i]);
     echo $source[$i];
@@ -46,3 +47,4 @@ for ($i = 0; $i < $sourceLength; $i++) {
         echo PHP_EOL;
     }
 }
+echo microtime(true) - $startTime . " seconds".PHP_EOL;
