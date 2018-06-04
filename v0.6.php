@@ -25,45 +25,33 @@ $source = file_get_contents("source.txt");
 $sourceLength = strlen($source);
 $expectedFillers = 0;
 // loop on the characters
-$counter = [
-    "1B" => 0,
-    "2B" => 0,
-    "3B" => 0,
-    "4B" => 0,
-    "FILLER" => 0,
-];
 $startTime = microtime(true);
 for ($i = 0; $i < $sourceLength; $i++) {
     $ordCurrentChar = ord($source[$i]);
     echo $source[$i];
     if ((MB4_FILLER_MASK & $ordCurrentChar) === MB4_FILLER_VERF) {
-        $counter['FILLER']++;
         if ($expectedFillers <= 0) {
             throw new Exception("Encoding error FILLER");
         }
         $expectedFillers--;
-    } elseif ((MB4_1B_MASK & $ordCurrentChar) === MB4_1B_VERF) {
-        $counter['1B']++;
-        if ($expectedFillers !== 0) {
-            throw new Exception("Encoding error MB4_1B");
-        }
-        $expectedFillers = 0;
     } elseif ((MB4_3B_MASK & $ordCurrentChar) === MB4_3B_VERF) {
-        $counter['3B']++;
         if ($expectedFillers !== 0) {
             throw new Exception("Encoding error MB4_3B");
         }
         $expectedFillers = 2;
         continue;
+    } elseif ((MB4_1B_MASK & $ordCurrentChar) === MB4_1B_VERF) {
+        if ($expectedFillers !== 0) {
+            throw new Exception("Encoding error MB4_1B");
+        }
+        $expectedFillers = 0;
     } elseif ((MB4_4B_MASK & $ordCurrentChar) === MB4_4B_VERF) {
-        $counter['4B']++;
         if ($expectedFillers !== 0) {
             throw new Exception("Encoding error MB4_4B");
         }
         $expectedFillers = 3;
         continue;
     } elseif ((MB4_2B_MASK & $ordCurrentChar) === MB4_2B_VERF) {
-        $counter['2B']++;
         if ($expectedFillers !== 0) {
             throw new Exception("Encoding error MB4_2B");
         }
